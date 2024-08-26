@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/Leepoch/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Leepoch/frontend-project-12/actions)",
   "main": "index.js",
+  "workspaces": ["my-app"],
   "scripts": {
     "build": "npm run build --prefix frontend",
     "start": "start-server -s ./frontend/build",
@@ -12,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/static": "^7.0.4",
     "@hexlet/chat-server": "^2.0.4"
   }
 }
