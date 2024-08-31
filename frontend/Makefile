@@ -9,3 +9,6 @@ build:
 
 lint:
 	npx eslint --ext js,jsx --no-eslintrc --config .eslintrc.yml .
+
+fixLint:
+	npx eslint --fix .
