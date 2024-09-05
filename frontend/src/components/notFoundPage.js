@@ -1,4 +1,6 @@
-const NotFound = () => (
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const NotFoundPage = () => (
   <div className="h-100">
     <div className="h-100" id="chat">
       <div className="d-flex flex-column h-100">
@@ -23,4 +25,4 @@ const NotFound = () => (
   </div>
 );
 
-export default NotFound;
+export default NotFoundPage;
