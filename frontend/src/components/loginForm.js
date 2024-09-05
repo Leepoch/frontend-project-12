@@ -1,12 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useFormik } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { fetchUserToken } from '../slices/auth.js';
+import iconLogin from '../assets/iconLogin.jpeg';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const [isValid, setValid] = useState('form-control');
 
   const formik = useFormik({
     initialValues: {
@@ -21,12 +23,16 @@ const LoginForm = () => {
         .max(20, 'Must be 20 characters or less')
         .required('Required'),
     }),
-    onSubmit: () => dispatch(
-      fetchUserToken({
-        username: formik.values.username,
-        password: formik.values.password,
-      }),
-    ),
+    onSubmit: () => {
+      setValid(formik.touched.username && formik.errors.username ? 'form-control' : 'form-control is-invalid');
+      console.log(213)
+      dispatch(
+        fetchUserToken({
+          username: formik.values.username,
+          password: formik.values.password,
+        }),
+      )
+    },
   });
   return (
     <div className="h-100">
@@ -46,7 +52,7 @@ const LoginForm = () => {
                   <div className="card-body row p-5">
                     <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                       <img
-                        src="../assets/iconLogin.jpeg"
+                        src={iconLogin}
                         className="rounded-circle"
                         alt="Войти"
                       />
@@ -58,38 +64,34 @@ const LoginForm = () => {
                       <h1 className="text-center mb-4">Войти</h1>
                       <div className="form-floating mb-3">
                         <input
-                          name="username"
+                          name={"username"}
                           autoComplete="username"
                           required=""
                           placeholder="Ваш ник"
                           id="username"
-                          className="form-control"
+                          className={isValid}
                           onChange={formik.handleChange}
                           value={formik.values.username}
                         />
-                        {formik.touched.username && formik.errors.username
-                          ? <div>{formik.errors.username}</div>
-                          : null}
-                        <label htmlFor="username">Ваш ник</label>
+                        <label htmlFor={"username"}>Ваш ник</label>
                       </div>
                       <div className="form-floating mb-4">
                         <input
-                          name="password"
+                          name={"password"}
                           autoComplete="current-password"
                           required=""
                           placeholder="Пароль"
                           type="password"
                           id="password"
-                          className="form-control"
+                          className={isValid}
                           onChange={formik.handleChange}
                           value={formik.values.password}
                         />
-                        {formik.touched.password && formik.errors.password ? (
-                          <div>{formik.errors.password}</div>
-                        ) : null}
-                        <label className="form-label" htmlFor="password">
+                        <label className="form-label" htmlFor={"password"}>
                           Пароль
                         </label>
+                        {formik.touched.username && formik.errors.username ?
+                        null : <div className="invalid-tooltip">Неверные имя пользователя или пароль</div>}
                       </div>
                       <button
                         type="submit"

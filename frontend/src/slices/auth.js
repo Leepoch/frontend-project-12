@@ -19,9 +19,6 @@ export const fetchUserToken = createAsyncThunk(
 const loginSlice = createSlice({
   name: 'auth',
   initialState: userAdapter.getInitialState(),
-  reducers: {
-    addToken: userAdapter.addOne,//Оставляем?
-  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserToken.fulfilled, (state, action) => {

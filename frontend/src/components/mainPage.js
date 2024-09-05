@@ -1,16 +1,17 @@
-// import React, { useState } from "react";
-// import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Navigate } from 'react-router-dom';
 
-const MainPage = () => <div>Some text</div>;
-// const [token, setToken] = useState(false);
+const MainPage = () => {
+  const [token, setToken] = useState(false);
+  useEffect(() => {
+    setToken(localStorage.getItem("token") ?? false);
+    
+  }, []);
 
-// useEffect(() => {
-//   haveToken = localStorage.getItem('token') ?? false;
-// }, []);
-
-// if (!haveToken) {
-//   return <Navigate to="/login" />;
-// }
-// console.log(token)
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
+  return <div>Some text</div>;
+};
 
 export default MainPage;
