@@ -3,12 +3,14 @@ import { useFormik } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { fetchUserToken } from '../slices/auth.js';
+import { useGetTokenMutation } from '../services/userApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const [isValid, setValid] = useState('form-control');
+  const token = localStorage.getItem('token');
+  const [getToken, { error: getTokenError }] = useGetTokenMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -24,14 +26,15 @@ const LoginForm = () => {
         .required('Required'),
     }),
     onSubmit: () => {
-      setValid(formik.touched.username && formik.errors.username ? 'form-control' : 'form-control is-invalid');
-      console.log(213)
-      dispatch(
-        fetchUserToken({
-          username: formik.values.username,
-          password: formik.values.password,
-        }),
-      )
+      setValid(
+        formik.touched.username && formik.errors.username && !token
+          ? 'form-control'
+          : 'form-control is-invalid',
+      );
+      getToken({
+        username: formik.values.username,
+        password: formik.values.password,
+      });
     },
   });
   return (
@@ -64,7 +67,7 @@ const LoginForm = () => {
                       <h1 className="text-center mb-4">Войти</h1>
                       <div className="form-floating mb-3">
                         <input
-                          name={"username"}
+                          name="username"
                           autoComplete="username"
                           required=""
                           placeholder="Ваш ник"
@@ -73,11 +76,11 @@ const LoginForm = () => {
                           onChange={formik.handleChange}
                           value={formik.values.username}
                         />
-                        <label htmlFor={"username"}>Ваш ник</label>
+                        <label htmlFor="username">Ваш ник</label>
                       </div>
                       <div className="form-floating mb-4">
                         <input
-                          name={"password"}
+                          name="password"
                           autoComplete="current-password"
                           required=""
                           placeholder="Пароль"
@@ -87,11 +90,15 @@ const LoginForm = () => {
                           onChange={formik.handleChange}
                           value={formik.values.password}
                         />
-                        <label className="form-label" htmlFor={"password"}>
+                        <label className="form-label" htmlFor="password">
                           Пароль
                         </label>
-                        {formik.touched.username && formik.errors.username ?
-                        null : <div className="invalid-tooltip">Неверные имя пользователя или пароль</div>}
+                        {formik.touched.username
+                        && formik.errors.username ? null : (
+                          <div className="invalid-tooltip">
+                            Неверные имя пользователя или пароль
+                          </div>
+                          )}
                       </div>
                       <button
                         type="submit"
