@@ -6,9 +6,9 @@ import { useGetTokenMutation } from '../services/userApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
 
 const LoginForm = () => {
-  const [isValid, setValid] = useState('form-control');
+  const [valid, setValid] = useState('form-control');
   const token = localStorage.getItem('token');
-  const [getToken, { data, error, isLoading }] = useGetTokenMutation();
+  const [getToken] = useGetTokenMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -25,16 +25,16 @@ const LoginForm = () => {
     }),
     onSubmit: () => {
       setValid(
-        formik.touched.username && formik.errors.username && error
-          ? 'form-control'
-          : 'form-control is-invalid',
+        formik.touched.username && formik.errors.username
+          ? 'form-control is-invalid'
+          : 'form-control',
       );
       getToken({
         username: formik.values.username,
         password: formik.values.password,
-      });
-      console.log(isLoading)
-      console.log(data.token);
+      }).unwrap().then((fulfilled) => {
+        localStorage.setItem('token', fulfilled.token);
+      }).catch(() => setValid('form-control is-invalid'));
     },
   });
   return (
@@ -72,7 +72,7 @@ const LoginForm = () => {
                           required=""
                           placeholder="Ваш ник"
                           id="username"
-                          className={isValid}
+                          className={valid}
                           onChange={formik.handleChange}
                           value={formik.values.username}
                         />
@@ -86,7 +86,7 @@ const LoginForm = () => {
                           placeholder="Пароль"
                           type="password"
                           id="password"
-                          className={isValid}
+                          className={valid}
                           onChange={formik.handleChange}
                           value={formik.values.password}
                         />
