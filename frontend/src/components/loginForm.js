@@ -2,15 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useFormik } from 'formik';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux';
 import { useGetTokenMutation } from '../services/userApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
 
 const LoginForm = () => {
-  const dispatch = useDispatch();
   const [isValid, setValid] = useState('form-control');
   const token = localStorage.getItem('token');
-  const [getToken, { error: getTokenError }] = useGetTokenMutation();
+  const [getToken, { data, error, isLoading }] = useGetTokenMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -27,7 +25,7 @@ const LoginForm = () => {
     }),
     onSubmit: () => {
       setValid(
-        formik.touched.username && formik.errors.username && !token
+        formik.touched.username && formik.errors.username && error
           ? 'form-control'
           : 'form-control is-invalid',
       );
@@ -35,6 +33,8 @@ const LoginForm = () => {
         username: formik.values.username,
         password: formik.values.password,
       });
+      console.log(isLoading)
+      console.log(data.token);
     },
   });
   return (
