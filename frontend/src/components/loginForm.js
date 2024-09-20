@@ -1,13 +1,22 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import { useGetTokenMutation } from '../services/userApi.js';
+import { useGetTokenMutation } from '../services/chatApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    }
+  }, [])
+
   const [valid, setValid] = useState('form-control');
-  const token = localStorage.getItem('token');
   const [getToken] = useGetTokenMutation();
 
   const formik = useFormik({
@@ -34,9 +43,11 @@ const LoginForm = () => {
         password: formik.values.password,
       }).unwrap().then((fulfilled) => {
         localStorage.setItem('token', fulfilled.token);
+        navigate('/');
       }).catch(() => setValid('form-control is-invalid'));
     },
   });
+
   return (
     <div className="h-100">
       <div className="h-100" id="chat">
