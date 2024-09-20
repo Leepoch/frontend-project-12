@@ -9,6 +9,7 @@ const MainPage = () => {
   const dispatch = useDispatch();
   const [token, setToken] = useState(localStorage.getItem('token'));
   const { data, isSuccess } = useGetChannelsQuery(token);
+  console.log(data)
 
   useEffect(() => {
     if (!token) {
@@ -19,10 +20,7 @@ const MainPage = () => {
     }
   });
 
-  if (isSuccess) {
-    const channels = useSelector(selectors.selectAll);
-    console.log(channels)
-  }
+  const channels = useSelector(selectors.selectAll);
 
   const exitHandle = () => {
     localStorage.removeItem('token');
@@ -69,7 +67,7 @@ const MainPage = () => {
                   id="channels-box"
                   className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
                 >
-                  {/* {channels.length >= 1 && channels.map((channel) => {
+                  {channels.length >= 1 && channels.map((channel) => {
                     <li className="nav-item w-100">
                     <button
                       type="button"
@@ -79,7 +77,7 @@ const MainPage = () => {
                       {channel.changes.name}
                     </button>
                   </li>
-                  })} */}
+                  })}
                 </ul>
               </div>
               <div className="col p-0 h-100">
