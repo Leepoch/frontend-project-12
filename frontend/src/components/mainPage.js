@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetChannelsQuery } from '../services/chatApi.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectors, addChannel } from '../slices/channelsSlice.js';
+import { selectors, addChannel, addChannels } from '../slices/channelsSlice.js';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ const MainPage = () => {
       navigate('/login');
     }
     if (isSuccess) {
+      console.log(11111)
       dispatch(addChannel({ id: data[0].id, changes: data[0] }));
     }
   });
