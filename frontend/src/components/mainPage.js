@@ -2,26 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetChannelsQuery } from '../services/chatApi.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectors, addChannel, addChannels } from '../slices/channelsSlice.js';
+import { addChannels } from '../slices/channelsSlice.js';
 
 const MainPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const token = localStorage.getItem('token');
   const { data, isSuccess } = useGetChannelsQuery(token);
-  console.log(data)
 
   useEffect(() => {
     if (!token) {
       navigate('/login');
     }
     if (isSuccess) {
-      console.log(11111)
-      dispatch(addChannel({ id: data[0].id, changes: data[0] }));
+      dispatch(addChannels(data));
     }
-  });
+  }, []);
+  
 
-  const channels = useSelector(selectors.selectAll);
+  const { entities, ids } = useSelector((state) => state.channels);
+  console.log(ids);
 
   const exitHandle = () => {
     localStorage.removeItem('token');
@@ -68,14 +68,14 @@ const MainPage = () => {
                   id="channels-box"
                   className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
                 >
-                  {channels.length >= 1 && channels.map((channel) => {
+                  {ids.length >= 1 && ids.map((id) => {
                     <li className="nav-item w-100">
                     <button
                       type="button"
                       className="w-100 rounded-0 text-start btn btn-secondary"
                     >
                       <span className="me-1">#</span>
-                      {channel.changes.name}
+                      {entities[id].name}
                     </button>
                   </li>
                   })}
