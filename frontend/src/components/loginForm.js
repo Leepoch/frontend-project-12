@@ -5,16 +5,19 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useGetTokenMutation } from '../services/chatApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
+import { addUser } from '../slices/userSlice.js';
+import { useDispatch } from 'react-redux';
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
     if (token) {
       navigate('/');
     }
-  }, [])
+  }, []);
 
   const [valid, setValid] = useState('form-control');
   const [getToken] = useGetTokenMutation();
@@ -33,6 +36,7 @@ const LoginForm = () => {
         .required('Required'),
     }),
     onSubmit: () => {
+      localStorage.setItem('username', formik.values.username);
       setValid(
         formik.touched.username && formik.errors.username
           ? 'form-control is-invalid'

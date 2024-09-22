@@ -19,7 +19,30 @@ export const chatApi = createApi({
         },
       }),
     }),
+    getMessages: builder.query({
+      query: (token) => ({
+        url: '/messages',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
+    postMessage: builder.mutation({
+      query: (token, message) => ({
+        url: '/messages',
+        method: 'POST',
+        body: message,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetTokenMutation, useGetChannelsQuery } = chatApi;
+export const {
+  useGetTokenMutation,
+  useGetChannelsQuery,
+  useGetMessagesQuery,
+  usePostMessageMutation,
+} = chatApi;

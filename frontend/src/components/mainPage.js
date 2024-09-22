@@ -1,31 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetChannelsQuery } from '../services/chatApi.js';
 import { useDispatch, useSelector } from 'react-redux';
+import cn from 'classnames';
+import { usePostMessageMutation, useGetChannelsQuery, useGetMessagesQuery } from '../services/chatApi.js';
 import { addChannels } from '../slices/channelsSlice.js';
+import { addMessages, addMessage } from '../slices/messagesSlice.js';
+
 
 const MainPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
-  const { data, isSuccess } = useGetChannelsQuery(token);
+  const channelsData = useGetChannelsQuery(token);
+  const messagesData = useGetMessagesQuery(token);
+  const [postMessage] = usePostMessageMutation();
+  const channels = useSelector((state) => state.channels);
+  const messages = useSelector((state) => state.messages);
+  const [message, setMessage] = useState('');
+  const [activeChannelId, setActiveChannelId] = useState('1');
 
   useEffect(() => {
     if (!token) {
       navigate('/login');
     }
-    if (isSuccess) {
-      dispatch(addChannels(data));
+    if (channelsData.isSuccess) {
+      dispatch(addChannels(channelsData.data));
     }
-  }, []);
-  
-
-  const { entities, ids } = useSelector((state) => state.channels);
-  console.log(ids);
+    if (messagesData.isSuccess) {
+      dispatch(addMessages(messagesData.data));
+    }
+  }, [channelsData.isSuccess, messagesData.isSuccess]);
 
   const exitHandle = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     navigate('/login');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    postMessage(localStorage.getItem('token'), {
+      body: message,
+      channelId: activeChannelId,
+      username: localStorage.getItem('username'),
+    }).unwrap().then((response) => {
+      dispatch(addMessage({
+        id: response.id,
+        body: message,
+        channelId: activeChannelId,
+        username: localStorage.getItem('username'),
+      }))
+    }).catch((e) => console.log(e));
+    console.log(messagesData)
+  }
+
+  console.log()
+  const handleChange = (e) => {
+    setMessage(e.target.value);
   }
 
   return (
@@ -68,16 +99,21 @@ const MainPage = () => {
                   id="channels-box"
                   className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
                 >
-                  {ids.length >= 1 && ids.map((id) => {
-                    <li className="nav-item w-100">
-                    <button
-                      type="button"
-                      className="w-100 rounded-0 text-start btn btn-secondary"
-                    >
-                      <span className="me-1">#</span>
-                      {entities[id].name}
-                    </button>
-                  </li>
+                  {channels.ids.length >= 1 && channels.ids.map((id) => {
+                    const channelClass = cn('w-100 rounded-0 text-start btn', {
+                      'btn-secondary': channels.entities[id] === activeChannelId,
+                    });
+                    return (
+                      <li className="nav-item w-100" key={id}>    
+                        <button
+                          type="button"
+                          className={channelClass}
+                        >
+                          <span className="me-1">#</span>
+                          {channels.entities[id].name}
+                        </button>
+                      </li>
+                    );
                   })}
                 </ul>
               </div>
@@ -85,14 +121,20 @@ const MainPage = () => {
                 <div className="d-flex flex-column h-100">
                   <div className="bg-light mb-4 p-3 shadow-sm small">
                     <p className="m-0">
-                      <b># general</b>
+                      <b># {channels.ids.length > 0 && channels.entities[activeChannelId].name}</b>
                     </p>
                     <span className="text-muted">0 сообщений</span>
                   </div>
                   <div
                     id="messages-box"
                     className="chat-messages overflow-auto px-5 "
-                  />
+                  >
+                    {/* {здесь цикл для вывода сообщений} */}
+                    {}
+                    <div className="text-break mb-2"><b>{
+                      localStorage.getItem('username')
+                      }</b>: message</div>
+                    </div>
                   <div className="mt-auto px-5 py-3">
                     <form noValidate="" className="py-1 border rounded-2">
                       <div className="input-group has-validation">
@@ -101,12 +143,14 @@ const MainPage = () => {
                           aria-label="Новое сообщение"
                           placeholder="Введите сообщение..."
                           className="border-0 p-0 ps-2 form-control"
-                          value=""
+                          value={message}
+                          onChange={handleChange}
                         />
                         <button
                           type="submit"
                           disabled=""
                           className="btn btn-group-vertical"
+                          onClick={handleSubmit}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
