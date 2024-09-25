@@ -109,11 +109,12 @@ const LoginForm = () => {
                           Пароль
                         </label>
                         {formik.touched.username
-                        && formik.errors.username ? null : (
-                          <div className="invalid-tooltip">
-                            Неверные имя пользователя или пароль
-                          </div>
-                          )}
+                          && formik.errors.username ? null : (
+                            <div className="invalid-tooltip">
+                              Неверные имя пользователя или пароль
+                            </div>
+                          )
+                        }
                       </div>
                       <button
                         type="submit"

@@ -21,8 +21,11 @@ const slice = createSlice({
         state.ids.push(newChannel.id);
       });
     },
+    addMessageToChannel(state, action) {
+      console.log(action.payload);
+    }
   },
 });
 
-export const { addChannels } = slice.actions;
+export const { addChannels, addMessageToChannel } = slice.actions;
 export default slice.reducer;

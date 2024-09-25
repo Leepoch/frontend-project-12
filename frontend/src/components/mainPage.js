@@ -5,6 +5,7 @@ import cn from 'classnames';
 import { usePostMessageMutation, useGetChannelsQuery, useGetMessagesQuery } from '../services/chatApi.js';
 import { addChannels } from '../slices/channelsSlice.js';
 import { addMessages, addMessage } from '../slices/messagesSlice.js';
+import io from 'socket.io-client'
 
 
 const MainPage = () => {
@@ -16,19 +17,25 @@ const MainPage = () => {
   const [postMessage] = usePostMessageMutation();
   const channels = useSelector((state) => state.channels);
   const messages = useSelector((state) => state.messages);
-  const [message, setMessage] = useState('');
+  const [currentMessage, setCurrentMessage] = useState('');
   const [activeChannelId, setActiveChannelId] = useState('1');
+  const socket = io('ws://localhost:3000');
+
+  socket.on('newMessage', (payload) => {
+    console.log(payload);
+  });
 
   useEffect(() => {
     if (!token) {
       navigate('/login');
     }
+
     if (channelsData.isSuccess) {
       dispatch(addChannels(channelsData.data));
     }
-    if (messagesData.isSuccess) {
-      dispatch(addMessages(messagesData.data));
-    }
+    // if (messagesData.isSuccess) {
+    //   dispatch(addMessages(messagesData.data));
+    // }
   }, [channelsData.isSuccess, messagesData.isSuccess]);
 
   const exitHandle = () => {
@@ -39,25 +46,23 @@ const MainPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     postMessage(localStorage.getItem('token'), {
-      body: message,
+      body: currentMessage,
       channelId: activeChannelId,
       username: localStorage.getItem('username'),
-    }).unwrap().then((response) => {
-      dispatch(addMessage({
-        id: response.id,
-        body: message,
-        channelId: activeChannelId,
-        username: localStorage.getItem('username'),
-      }))
     }).catch((e) => console.log(e));
-    console.log(messagesData)
+
+    
   }
 
-  console.log()
   const handleChange = (e) => {
-    setMessage(e.target.value);
+    setCurrentMessage(e.target.value);
   }
+
+  //в какой последовательности обрабатывать данные
+  //(получаем с сервера -> добавляем в стор -> из стора рендерим???)
+  //
 
   return (
     <div className="h-100">
@@ -143,7 +148,7 @@ const MainPage = () => {
                           aria-label="Новое сообщение"
                           placeholder="Введите сообщение..."
                           className="border-0 p-0 ps-2 form-control"
-                          value={message}
+                          value={currentMessage}
                           onChange={handleChange}
                         />
                         <button
