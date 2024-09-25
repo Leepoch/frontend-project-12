@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Formik, Form } from "formik";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,6 +10,8 @@ import { useSignupUserMutation } from "../services/chatApi.js";
 
 const SingupForm = () => {
   const [signupUser] = useSignupUserMutation();
+  const [userExists, setUserExists] = useState(false);
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -19,27 +21,28 @@ const SingupForm = () => {
     },
     validationSchema: Yup.object({
       username: Yup.string()
-        .min(3, 'Must be greater 3')
-        .max(15, "Must be 15 characters or less")
-        .required("Required"),
+        .min(3, 'incorrect length')
+        .max(15, "incorrect length")
+        .required("required"),
       password: Yup.string()
-        .min(6, 'Must be greater than 6')
-        .max(20, "Must be 20 characters or less")
-        .required("Required"),
+        .min(6, 'incorrect length')
+        .required("required"),
       confirmPassword: Yup.string()
-        .min(6, 'Must be greater than 6')
-        .max(20, 'Must be 20 characters or less')
-        .oneOf([Yup.ref('password'), null], 'Пароли должны совпадать')
-        .required("Required")
+        .min(6, 'incorrect length')
+        .oneOf([Yup.ref('password')], 'passwords must match')
+        .required("required")
     }),
     onSubmit: async () => {
       const response = await signupUser({
         username: formik.values.username,
         password: formik.values.password
       })
-
-      if (response.error.status === 409) {
-        
+      console.log(response)
+      if (response.error?.status === 409) {
+        setUserExists(true);
+      } else if (!response.error) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
       }
     },
   });
@@ -83,9 +86,17 @@ const SingupForm = () => {
                         <label className="form-label" htmlFor="username">
                           Имя пользователя
                         </label>
-                        <div placement="right" className="invalid-tooltip">
-                          Обязательное поле
-                        </div>
+                        {
+                          (formik.errors.username === 'required') &&
+                          formik.touched.username ?
+                          <div>Обязательное поле</div> : null
+                        }
+                        {
+                          (formik.errors.username === 'incorrect length') &&
+                          formik.touched.username ?
+                          <div>От 3 до 20 символов</div> : null
+                        }
+                        {userExists ? <div>Такой пользователь уже есть</div> : null}
                       </div>
                       <div className="form-floating mb-3">
                         <input
@@ -104,6 +115,16 @@ const SingupForm = () => {
                         <label className="form-label" htmlFor="password">
                           Пароль
                         </label>
+                        {
+                          (formik.errors.password === 'required') &&
+                          formik.touched.password ?
+                          <div>Обязательное поле</div> : null
+                        }
+                        {
+                          (formik.errors.password === 'incorrect length') &&
+                          formik.touched.password ?
+                          <div>Не менее 6 символов</div> : null
+                        }
                       </div>
                       <div className="form-floating mb-4">
                         <input
@@ -121,12 +142,10 @@ const SingupForm = () => {
                         <label className="form-label" htmlFor="confirmPassword">
                           Подтвердите пароль
                         </label>
-                        {formik.touched.confirmPassword
-                          && formik.errors.confirmPassword ? null : (
-                            <div className="invalid-tooltip">
-                              Неверные имя пользователя или пароль
-                            </div>
-                          )
+                        {
+                          (formik.errors.confirmPassword === 'passwords must match') &&
+                          formik.touched.confirmPassword ?
+                          <div>Пароли должны совпадать</div> : null
                         }
                       </div>
                       <button

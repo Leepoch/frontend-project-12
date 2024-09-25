@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 import { usePostMessageMutation, useGetChannelsQuery, useGetMessagesQuery } from '../services/chatApi.js';
-import { addChannels } from '../slices/channelsSlice.js';
+import { addChannels, addMessageToChannel } from '../slices/channelsSlice.js';
 import { addMessages, addMessage } from '../slices/messagesSlice.js';
 import io from 'socket.io-client'
+import axios from 'axios';
 
 
 const MainPage = () => {
@@ -17,13 +18,20 @@ const MainPage = () => {
   const [postMessage] = usePostMessageMutation();
   const channels = useSelector((state) => state.channels);
   const messages = useSelector((state) => state.messages);
-  const [currentMessage, setCurrentMessage] = useState('');
   const [activeChannelId, setActiveChannelId] = useState('1');
-  const socket = io('ws://localhost:3000');
+  const [currentMessage, setCurrentMessage] = useState('');
+  const currentChanelMessages = channels.entities[activeChannelId]
+  const inputChat = useRef(null);
 
-  socket.on('newMessage', (payload) => {
-    console.log(payload);
-  });
+  // const socket = io('ws://localhost:3000');
+
+  // socket.on('newMessage', (payload) => {
+  //   console.log(payload);
+  // });
+
+  useEffect(() => {
+    inputChat.current.focus();
+  }, [])
 
   useEffect(() => {
     if (!token) {
@@ -33,9 +41,9 @@ const MainPage = () => {
     if (channelsData.isSuccess) {
       dispatch(addChannels(channelsData.data));
     }
-    // if (messagesData.isSuccess) {
-    //   dispatch(addMessages(messagesData.data));
-    // }
+    if (messagesData.isSuccess) {
+      dispatch(addMessages(messagesData.data));
+    }
   }, [channelsData.isSuccess, messagesData.isSuccess]);
 
   const exitHandle = () => {
@@ -44,23 +52,29 @@ const MainPage = () => {
     navigate('/login');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    postMessage(localStorage.getItem('token'), {
+
+    inputChat.current.focus();
+    setCurrentMessage('');
+
+    const newMessage = {
       body: currentMessage,
       channelId: activeChannelId,
       username: localStorage.getItem('username'),
-    }).catch((e) => console.log(e));
-
-    
+    }
+    const response = await axios.post('/api/v1/messages', newMessage, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+    })
+    dispatch(addMessage(response.data));
   }
 
   const handleChange = (e) => {
     setCurrentMessage(e.target.value);
   }
 
-  //в какой последовательности обрабатывать данные
   //(получаем с сервера -> добавляем в стор -> из стора рендерим???)
   //
 
@@ -128,22 +142,23 @@ const MainPage = () => {
                     <p className="m-0">
                       <b># {channels.ids.length > 0 && channels.entities[activeChannelId].name}</b>
                     </p>
-                    <span className="text-muted">0 сообщений</span>
+                    <span className="text-muted">{messages.ids.length} сообщений</span>
                   </div>
                   <div
                     id="messages-box"
                     className="chat-messages overflow-auto px-5 "
                   >
-                    {/* {здесь цикл для вывода сообщений} */}
-                    {}
-                    <div className="text-break mb-2"><b>{
-                      localStorage.getItem('username')
-                      }</b>: message</div>
-                    </div>
+                    {messages.ids.length > 0 && messages.ids.map((messageId) => {
+                      const username = messages.entities[messageId].username;
+                      const text = messages.entities[messageId].body;
+                      return <div key={messageId} className="text-break mb-2"><b>{username}</b>: {text}</div>
+                    })}
+                  </div>
                   <div className="mt-auto px-5 py-3">
                     <form noValidate="" className="py-1 border rounded-2">
                       <div className="input-group has-validation">
                         <input
+                          ref={inputChat}
                           name="body"
                           aria-label="Новое сообщение"
                           placeholder="Введите сообщение..."

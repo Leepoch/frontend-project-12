@@ -10,7 +10,6 @@ import { useDispatch } from 'react-redux';
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
