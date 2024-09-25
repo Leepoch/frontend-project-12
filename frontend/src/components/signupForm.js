@@ -42,6 +42,7 @@ const SingupForm = () => {
         setUserExists(true);
       } else if (!response.error) {
         localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username', response.data.username)
         navigate('/');
       }
     },

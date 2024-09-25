@@ -12,8 +12,10 @@ const slice = createSlice({
     addChannels(state, action) {
       action.payload.forEach((channel) => {
         const newChannel = { ...channel };
-        state.entities[newChannel.id] = newChannel;
-        state.ids.push(newChannel.id);
+        if (!state.entities[newChannel.id]) {
+          state.entities[newChannel.id] = newChannel;
+          state.ids.push(newChannel.id);
+        }
       });
     },
     addMessageToChannel(state, action) {
