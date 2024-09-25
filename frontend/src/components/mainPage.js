@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
-import { usePostMessageMutation, useGetChannelsQuery, useGetMessagesQuery } from '../services/chatApi.js';
-import { addChannels, addMessageToChannel } from '../slices/channelsSlice.js';
+import { useGetChannelsQuery, useGetMessagesQuery } from '../services/chatApi.js';
+import { addChannels, addMessageToChannel, addMessagesToChannel } from '../slices/channelsSlice.js';
 import { addMessages, addMessage } from '../slices/messagesSlice.js';
 import io from 'socket.io-client'
 import axios from 'axios';
@@ -15,12 +15,11 @@ const MainPage = () => {
   const token = localStorage.getItem('token');
   const channelsData = useGetChannelsQuery(token);
   const messagesData = useGetMessagesQuery(token);
-  const [postMessage] = usePostMessageMutation();
   const channels = useSelector((state) => state.channels);
   const messages = useSelector((state) => state.messages);
   const [activeChannelId, setActiveChannelId] = useState('1');
   const [currentMessage, setCurrentMessage] = useState('');
-  const currentChanelMessages = channels.entities[activeChannelId]
+  const [messagesNumber, setMessagesNumber] = useState(0);
   const inputChat = useRef(null);
 
   // const socket = io('ws://localhost:3000');
@@ -37,7 +36,6 @@ const MainPage = () => {
     if (!token) {
       navigate('/login');
     }
-
     if (channelsData.isSuccess) {
       dispatch(addChannels(channelsData.data));
     }
@@ -69,14 +67,20 @@ const MainPage = () => {
         },
     })
     dispatch(addMessage(response.data));
+    dispatch(addMessageToChannel({
+      channelId: response.data.channelId,
+      messageId: response.data.id,
+    }))
+    setMessagesNumber(channels.entities[activeChannelId].messages.length);
+  }
+
+  const handleChoose = (e) => {
+    setActiveChannelId(e.target.id);
   }
 
   const handleChange = (e) => {
     setCurrentMessage(e.target.value);
   }
-
-  //(получаем с сервера -> добавляем в стор -> из стора рендерим???)
-  //
 
   return (
     <div className="h-100">
@@ -120,13 +124,15 @@ const MainPage = () => {
                 >
                   {channels.ids.length >= 1 && channels.ids.map((id) => {
                     const channelClass = cn('w-100 rounded-0 text-start btn', {
-                      'btn-secondary': channels.entities[id] === activeChannelId,
+                      'btn-secondary': id === activeChannelId,
                     });
                     return (
                       <li className="nav-item w-100" key={id}>    
                         <button
                           type="button"
                           className={channelClass}
+                          onClick={handleChoose}
+                          id={id}
                         >
                           <span className="me-1">#</span>
                           {channels.entities[id].name}
@@ -142,7 +148,9 @@ const MainPage = () => {
                     <p className="m-0">
                       <b># {channels.ids.length > 0 && channels.entities[activeChannelId].name}</b>
                     </p>
-                    <span className="text-muted">{messages.ids.length} сообщений</span>
+                    <span className="text-muted">
+                      {messagesNumber} сообщений
+                    </span>
                   </div>
                   <div
                     id="messages-box"
