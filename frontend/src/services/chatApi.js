@@ -27,7 +27,7 @@ export const chatApi = createApi({
         },
       }),
     }),
-    postMessage: builder.mutation({
+    postChannel: builder.mutation({
       query: (token, message) => ({
         url: '/messages',
         method: 'POST',
@@ -43,7 +43,7 @@ export const chatApi = createApi({
         method: 'POST',
         body: userData,
       }),
-    })
+    }),
   }),
 });
 
@@ -51,6 +51,6 @@ export const {
   useGetTokenMutation,
   useGetChannelsQuery,
   useGetMessagesQuery,
-  usePostMessageMutation,
+  usePostChannelMutation,
   useSignupUserMutation,
 } = chatApi;

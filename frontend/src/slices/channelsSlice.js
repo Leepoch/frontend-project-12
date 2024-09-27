@@ -1,12 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   ids: [],
   entities: {},
+  activeChannelId: '1',
 };
 
 const slice = createSlice({
-  name: "channels",
+  name: 'channels',
   initialState,
   reducers: {
     addChannels(state, action) {
@@ -20,17 +21,23 @@ const slice = createSlice({
       });
     },
     addMessageToChannel(state, { payload }) {
-      state.entities[payload.channelId].messages.push(payload.messageId);
+      state.entities[payload.channelId].messages.push(payload.id);
     },
     addMessagesToChannel(state, { payload }) {
-      state.entities[payload.channelId].messages.push(...payload.messagesId);
+      payload.forEach((message) => {
+        state.entities[message.channelId].messages.push(message.id);
+      });
     },
+    setActiveChannelId(state, { payload }) {
+      state.activeChannelId = payload;
+    }
   },
 });
 
 export const {
   addChannels,
   addMessageToChannel,
-  addMessagesToChannel
+  addMessagesToChannel,
+  setActiveChannelId,
 } = slice.actions;
 export default slice.reducer;

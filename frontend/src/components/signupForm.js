@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Formik, Form } from "formik";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useSignupUserMutation } from "../services/chatApi.js";
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Formik, Form, useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import { useSignupUserMutation } from '../services/chatApi.js';
 // import iconSignup from '../assets/iconSignup.jpeg';
 
 const SingupForm = () => {
@@ -15,34 +13,34 @@ const SingupForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
       confirmPassword: '',
     },
     validationSchema: Yup.object({
       username: Yup.string()
         .min(3, 'incorrect length')
-        .max(15, "incorrect length")
-        .required("required"),
+        .max(15, 'incorrect length')
+        .required('required'),
       password: Yup.string()
         .min(6, 'incorrect length')
-        .required("required"),
+        .required('required'),
       confirmPassword: Yup.string()
         .min(6, 'incorrect length')
         .oneOf([Yup.ref('password')], 'passwords must match')
-        .required("required")
+        .required('required'),
     }),
     onSubmit: async () => {
       const response = await signupUser({
         username: formik.values.username,
-        password: formik.values.password
-      })
-      console.log(response)
+        password: formik.values.password,
+      });
+      console.log(response);
       if (response.error?.status === 409) {
         setUserExists(true);
       } else if (!response.error) {
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('username', response.data.username)
+        localStorage.setItem('username', response.data.username);
         navigate('/');
       }
     },
@@ -88,14 +86,14 @@ const SingupForm = () => {
                           Имя пользователя
                         </label>
                         {
-                          (formik.errors.username === 'required') &&
-                          formik.touched.username ?
-                          <div>Обязательное поле</div> : null
+                          (formik.errors.username === 'required')
+                          && formik.touched.username
+                            ? <div>Обязательное поле</div> : null
                         }
                         {
-                          (formik.errors.username === 'incorrect length') &&
-                          formik.touched.username ?
-                          <div>От 3 до 20 символов</div> : null
+                          (formik.errors.username === 'incorrect length')
+                          && formik.touched.username
+                            ? <div>От 3 до 20 символов</div> : null
                         }
                         {userExists ? <div>Такой пользователь уже есть</div> : null}
                       </div>
@@ -117,14 +115,14 @@ const SingupForm = () => {
                           Пароль
                         </label>
                         {
-                          (formik.errors.password === 'required') &&
-                          formik.touched.password ?
-                          <div>Обязательное поле</div> : null
+                          (formik.errors.password === 'required')
+                          && formik.touched.password
+                            ? <div>Обязательное поле</div> : null
                         }
                         {
-                          (formik.errors.password === 'incorrect length') &&
-                          formik.touched.password ?
-                          <div>Не менее 6 символов</div> : null
+                          (formik.errors.password === 'incorrect length')
+                          && formik.touched.password
+                            ? <div>Не менее 6 символов</div> : null
                         }
                       </div>
                       <div className="form-floating mb-4">
@@ -144,9 +142,9 @@ const SingupForm = () => {
                           Подтвердите пароль
                         </label>
                         {
-                          (formik.errors.confirmPassword === 'passwords must match') &&
-                          formik.touched.confirmPassword ?
-                          <div>Пароли должны совпадать</div> : null
+                          (formik.errors.confirmPassword === 'passwords must match')
+                          && formik.touched.confirmPassword
+                            ? <div>Пароли должны совпадать</div> : null
                         }
                       </div>
                       <button

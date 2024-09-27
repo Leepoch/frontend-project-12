@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
 import { useGetTokenMutation } from '../services/chatApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
 import { addUser } from '../slices/userSlice.js';
-import { useDispatch } from 'react-redux';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -112,8 +112,7 @@ const LoginForm = () => {
                             <div className="invalid-tooltip">
                               Неверные имя пользователя или пароль
                             </div>
-                          )
-                        }
+                          )}
                       </div>
                       <button
                         type="submit"
