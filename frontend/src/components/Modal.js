@@ -2,39 +2,45 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useFormik } from "formik";
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveChannelId } from "../slices/channelsSlice.js";
-import { usePostChannelMutation } from "../services/chatApi.js";
+import { addChannel, setActiveChannelId } from "../slices/channelsSlice.js";
 import * as Yup from 'yup';
+import axios from 'axios';
 
 export const Modal = ({ setModal }) => {
   const dispatch = useDispatch();
-  const [channelName, setChannelName] = useState('');
   const activeChannelId = useSelector((state) => state.channels.activeChannelId);
 
   const formik = useFormik({
     initialValues: {
-        channelName: '',
+        name: '',
     },
     validationSchema: Yup.object({
-        channelName: Yup.string()
+        name: Yup.string()
           .min(3, 'incorrect length')
           .max(20, 'incorrect length')
           .required('Required'),
       }),
-      onSubmit: () => {
-        // const response = await usePostChannelMutation({ name: channelName })
-        console.log(111)
-        // dispatch(setActiveChannelId(response.id))
-        setChannelName('');
-        setModal(false);
-      },
+    onSubmit: async () => {
+      const newChannel = {
+        name: formik.values.name,
+      };
+      const response = await axios.post('/api/v1/channels', newChannel, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      dispatch(addChannel(response.data));
+      console.log(response)
+      dispatch(setActiveChannelId(response.data.id))
+      formik.values.name = '';
+      setModal(false);
+    },
   });
 
   const closeHandle = () => {
     setModal(false)
   }
 
-  console.log(formik.values.channelName)
   return (
     <>
       <div className="fade modal-backdrop show" />
@@ -65,7 +71,7 @@ export const Modal = ({ setModal }) => {
                     id="name"
                     className="mb-2 form-control"
                     onChange={formik.handleChange}
-                    value={formik.values.channelName}
+                    value={formik.values.name}
                   />
                   <label className="visually-hidden" htmlFor="name">
                     Имя канала

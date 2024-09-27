@@ -28,10 +28,10 @@ export const chatApi = createApi({
       }),
     }),
     postChannel: builder.mutation({
-      query: (token, message) => ({
+      query: (token, channel) => ({
         url: '/messages',
         method: 'POST',
-        body: message,
+        body: channel,
         headers: {
           Authorization: `Bearer ${token}`,
         },

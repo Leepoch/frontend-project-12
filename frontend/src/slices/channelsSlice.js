@@ -20,6 +20,11 @@ const slice = createSlice({
         }
       });
     },
+    addChannel(state, { payload }) {
+      state.entities[payload.id] = payload;
+      state.entities[payload.id].messages = [];
+      state.ids.push(payload.id);
+    },
     addMessageToChannel(state, { payload }) {
       state.entities[payload.channelId].messages.push(payload.id);
     },
@@ -36,6 +41,7 @@ const slice = createSlice({
 
 export const {
   addChannels,
+  addChannel,
   addMessageToChannel,
   addMessagesToChannel,
   setActiveChannelId,
