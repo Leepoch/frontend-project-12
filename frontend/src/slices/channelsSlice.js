@@ -4,6 +4,7 @@ const initialState = {
   ids: [],
   entities: {},
   activeChannelId: '1',
+  activeChannelMenuId: '',
 };
 
 const slice = createSlice({
@@ -25,6 +26,13 @@ const slice = createSlice({
       state.entities[payload.id].messages = [];
       state.ids.push(payload.id);
     },
+    removeChannel(state, { payload }) {
+      delete state.entities[payload.id];
+      state.ids = state.ids.filter((id) => id !== payload.id);
+    },
+    renameChannel(state, { payload }) {
+      state.entities[payload.id].name = payload.name;
+    },
     addMessageToChannel(state, { payload }) {
       state.entities[payload.channelId].messages.push(payload.id);
     },
@@ -35,7 +43,10 @@ const slice = createSlice({
     },
     setActiveChannelId(state, { payload }) {
       state.activeChannelId = payload;
-    }
+    },
+    setActiveChannelMenuId(state, { payload }) {
+      state.activeChannelMenuId = payload;
+    },
   },
 });
 
@@ -45,5 +56,8 @@ export const {
   addMessageToChannel,
   addMessagesToChannel,
   setActiveChannelId,
+  setActiveChannelMenuId,
+  removeChannel,
+  renameChannel,
 } = slice.actions;
 export default slice.reducer;

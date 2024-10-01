@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   ids: [],
   entities: {},
+  currentMessage: '',
 };
 
 const slice = createSlice({
@@ -20,8 +21,11 @@ const slice = createSlice({
       state.entities[message.id] = message;
       state.ids.push(message.id);
     },
+    setCurrentMessage(state, { payload }) {
+      state.currentMessage = payload;
+    },
   },
 });
 
-export const { addMessages, addMessage } = slice.actions;
+export const { addMessages, addMessage, setCurrentMessage } = slice.actions;
 export default slice.reducer;

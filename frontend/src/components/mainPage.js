@@ -1,6 +1,4 @@
-import React, {
-  act, useEffect, useRef, useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
@@ -15,9 +13,11 @@ import {
   addMessageToChannel,
   addMessagesToChannel,
   setActiveChannelId,
+  setActiveChannelMenuId,
 } from '../slices/channelsSlice.js';
-import { addMessages, addMessage } from '../slices/messagesSlice.js';
-import { Modal } from './Modal.js';
+import { addMessages, addMessage, setCurrentMessage } from '../slices/messagesSlice.js';
+import { Modal } from './modal/Modal.js';
+import { setChannelMenu, setIsOpenModal, setModalType } from '../slices/modalSlice.js';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -27,10 +27,11 @@ const MainPage = () => {
   const messagesData = useGetMessagesQuery(token);
   const channels = useSelector((state) => state.channels);
   const messages = useSelector((state) => state.messages);
-  const activeChannelId = useSelector((state) => state.channels.activeChannelId);
-  const [currentMessage, setCurrentMessage] = useState('');
+  const modal = useSelector((state) => state.modal);
+  const activeChannelId = useSelector(
+    (state) => state.channels.activeChannelId,
+  );
   const [messagesNumber, setMessagesNumber] = useState(0);
-  const [modal, setModal] = useState(false);
   const inputChat = useRef(null);
 
   // const socket = io('ws://localhost:3000');
@@ -41,7 +42,7 @@ const MainPage = () => {
 
   useEffect(() => {
     inputChat.current.focus();
-  }, []);
+  }, [activeChannelId]);
 
   useEffect(() => {
     if (!token) {
@@ -66,7 +67,7 @@ const MainPage = () => {
     e.preventDefault();
 
     const newMessage = {
-      body: currentMessage,
+      body: messages.currentMessage,
       channelId: activeChannelId,
       username: localStorage.getItem('username'),
     };
@@ -79,11 +80,7 @@ const MainPage = () => {
     dispatch(addMessageToChannel(response.data));
 
     inputChat.current.focus();
-    setCurrentMessage('');
-  };
-
-  const handleAddChannel = () => {
-    setModal(true);
+    dispatch(setCurrentMessage(''));
   };
 
   const handleChoose = (e) => {
@@ -91,7 +88,29 @@ const MainPage = () => {
   };
 
   const handleChange = (e) => {
-    setCurrentMessage(e.target.value);
+    dispatch(setCurrentMessage(e.target.value));
+  };
+
+  const handleChannelMenu = (e) => {
+    dispatch(setChannelMenu(!modal.channelMenu));
+    dispatch(setActiveChannelMenuId(e.target.id));
+  };
+
+  const handleAddChannel = () => {
+    dispatch(setIsOpenModal(true));
+    dispatch(setModalType('add'));
+  };
+
+  const handleDeleteChannel = () => {
+    dispatch(setIsOpenModal(true));
+    dispatch(setModalType('delete'));
+    dispatch(setChannelMenu(false));
+  };
+
+  const handleRenameChannel = () => {
+    dispatch(setIsOpenModal(true));
+    dispatch(setModalType('rename'));
+    dispatch(setChannelMenu(false));
   };
 
   return (
@@ -142,23 +161,104 @@ const MainPage = () => {
                   >
                     {channels.ids.length >= 1
                       && channels.ids.map((id) => {
+                        const { channelMenu } = modal;
+                        const activeMenuId = channels.activeChannelMenuId;
                         const channelClass = cn(
                           'w-100 rounded-0 text-start btn',
                           {
                             'btn-secondary': id === activeChannelId,
                           },
                         );
+                        const groupClass = cn('d-flex dropdown btn-group', {
+                          show: channelMenu && activeMenuId === id,
+                        });
+                        const buttonClass = cn(
+                          'flex-grow-0 dropdown-toggle dropdown-toggle-split btn btn-secondary',
+                          {
+                            show: channelMenu && activeMenuId === id,
+                          },
+                        );
+                        const menuClass = cn('dropdown-menu', {
+                          show: channelMenu && activeMenuId === id,
+                        });
+                        const channelMenuClass = cn('flex-grow-0 dropdown-toggle dropdown-toggle-split btn', {
+                          'btn-secondary': id === activeChannelId,
+                        });
+                        {
+                          if (!channels.entities[id].removable) {
+                            return (
+                              <li className="nav-item w-100" key={id}>
+                                <button
+                                  type="button"
+                                  className={channelClass}
+                                  onClick={handleChoose}
+                                  id={id}
+                                >
+                                  <span className="me-1">#</span>
+                                  {channels.entities[id].name}
+                                </button>
+                              </li>
+                            );
+                          }
+                        }
                         return (
                           <li className="nav-item w-100" key={id}>
-                            <button
-                              type="button"
-                              className={channelClass}
-                              onClick={handleChoose}
-                              id={id}
-                            >
-                              <span className="me-1">#</span>
-                              {channels.entities[id].name}
-                            </button>
+                            <div role="group" className={groupClass}>
+                              <button
+                                type="button"
+                                className={channelClass}
+                                onClick={handleChoose}
+                                id={id}
+                              >
+                                <span className="me-1">#</span>
+                                {channels.entities[id].name}
+                              </button>
+                              <button
+                                type="button"
+                                id={id}
+                                aria-expanded={channelMenu}
+                                className={channelMenuClass}
+                                onClick={handleChannelMenu}
+                              >
+                                <span className="visually-hidden">
+                                  Управление каналом
+                                </span>
+                              </button>
+                              <div
+                                x-placement="bottom-end"
+                                aria-labelledby="react-aria8879752112-:r0:"
+                                className={menuClass}
+                                data-popper-reference-hidden="false"
+                                data-popper-escaped="false"
+                                data-popper-placement="bottom-end"
+                                style={{
+                                  position: 'absolute',
+                                  inset: '0px 0px auto auto',
+                                  transform: 'translate(0px, 40px)',
+                                }}
+                              >
+                                <a
+                                  onClick={handleDeleteChannel}
+                                  data-rr-ui-dropdown-item=""
+                                  className="dropdown-item"
+                                  role="button"
+                                  tabIndex="0"
+                                  href="#"
+                                >
+                                  Удалить
+                                </a>
+                                <a
+                                  onClick={handleRenameChannel}
+                                  data-rr-ui-dropdown-item=""
+                                  className="dropdown-item"
+                                  role="button"
+                                  tabIndex="0"
+                                  href="#"
+                                >
+                                  Переименовать
+                                </a>
+                              </div>
+                            </div>
                           </li>
                         );
                       })}
@@ -209,7 +309,7 @@ const MainPage = () => {
                             aria-label="Новое сообщение"
                             placeholder="Введите сообщение..."
                             className="border-0 p-0 ps-2 form-control"
-                            value={currentMessage}
+                            value={messages.currentMessage}
                             onChange={handleChange}
                           />
                           <button
@@ -240,7 +340,7 @@ const MainPage = () => {
           <div className="Toastify" />
         </div>
       </div>
-      {modal ? <Modal setModal={setModal}/> : null}
+      {modal.isOpenModal ? <Modal /> : null}
     </>
   );
 };
