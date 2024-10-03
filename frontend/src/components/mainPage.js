@@ -298,6 +298,7 @@ const MainPage = () => {
                         && channels.entities[activeChannelId].messages.map(
                           (messageId) => {
                             const { username } = messages.entities[messageId];
+                            console.log(messageId)
                             console.log(messages)
                             const text = messages.entities[messageId].body;
                             return (

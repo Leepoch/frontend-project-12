@@ -8,6 +8,7 @@ import { addChannel, setActiveChannelId } from '../../slices/channelsSlice.js';
 import { setIsOpenModal } from '../../slices/modalSlice.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import toastSuccess from '../../toasty/index.js'
 
 export const ModalAdd = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ export const ModalAdd = () => {
         dispatch(addChannel(response.data));
         dispatch(setActiveChannelId(response.data.id));
         formik.values.name = '';
+        toastSuccess('toasts.add');
         dispatch(setIsOpenModal(false));
       }
     },
@@ -50,11 +52,6 @@ export const ModalAdd = () => {
 
   const closeHandle = () => {
     dispatch(setIsOpenModal(false));
-  }
-
-  const notify = () => {
-    toast('Wow')
-    console.log(22222)
   }
 
   return (
@@ -107,13 +104,15 @@ export const ModalAdd = () => {
                   >
                     Отменить
                   </button>
-                  <button onClick={notify} type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary">
                     Отправить
                   </button>
-                  <ToastContainer />
                 </div>
               </div>
             </form>
+            <ToastContainer
+                    autoClose={5000}
+                   />
           </div>
         </div>
       </div>
