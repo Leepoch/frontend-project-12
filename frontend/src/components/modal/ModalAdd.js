@@ -6,6 +6,8 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { addChannel, setActiveChannelId } from '../../slices/channelsSlice.js';
 import { setIsOpenModal } from '../../slices/modalSlice.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const ModalAdd = () => {
   const dispatch = useDispatch();
@@ -33,10 +35,12 @@ export const ModalAdd = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      dispatch(addChannel(response.data));
-      dispatch(setActiveChannelId(response.data.id));
-      formik.values.name = '';
-      dispatch(setIsOpenModal(false));
+      if (response.status === 200) {
+        dispatch(addChannel(response.data));
+        dispatch(setActiveChannelId(response.data.id));
+        formik.values.name = '';
+        dispatch(setIsOpenModal(false));
+      }
     },
   });
 
@@ -46,7 +50,12 @@ export const ModalAdd = () => {
 
   const closeHandle = () => {
     dispatch(setIsOpenModal(false));
-  };
+  }
+
+  const notify = () => {
+    toast('Wow')
+    console.log(22222)
+  }
 
   return (
     <div
@@ -98,9 +107,10 @@ export const ModalAdd = () => {
                   >
                     Отменить
                   </button>
-                  <button type="submit" className="btn btn-primary">
+                  <button onClick={notify} type="submit" className="btn btn-primary">
                     Отправить
                   </button>
+                  <ToastContainer />
                 </div>
               </div>
             </form>

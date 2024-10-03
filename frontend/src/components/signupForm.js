@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Formik, Form, useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import { useSignupUserMutation } from '../services/chatApi.js';
 // import iconSignup from '../assets/iconSignup.jpeg';
 
@@ -10,6 +11,7 @@ const SingupForm = () => {
   const [signupUser] = useSignupUserMutation();
   const [userExists, setUserExists] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const formik = useFormik({
     initialValues: {
@@ -53,7 +55,7 @@ const SingupForm = () => {
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
               <a className="navbar-brand" href="/">
-                Hexlet Chat
+                {t('hexletTextLogo')}
               </a>
             </div>
           </nav>
@@ -70,7 +72,7 @@ const SingupForm = () => {
                       />
                     </div>
                     <form className="w-50" onSubmit={formik.handleSubmit}>
-                      <h1 className="text-center mb-4">Регистрация</h1>
+                      <h1 className="text-center mb-4">{t('registration')}</h1>
                       <div className="form-floating mb-3">
                         <input
                           placeholder="От 3 до 20 символов"
@@ -83,19 +85,19 @@ const SingupForm = () => {
                           onChange={formik.handleChange}
                         />
                         <label className="form-label" htmlFor="username">
-                          Имя пользователя
+                          {t('signupForm.username')}
                         </label>
                         {
                           (formik.errors.username === 'required')
                           && formik.touched.username
-                            ? <div>Обязательное поле</div> : null
+                            ? <div>{t('signupForm.requiredField')}</div> : null
                         }
                         {
                           (formik.errors.username === 'incorrect length')
                           && formik.touched.username
-                            ? <div>От 3 до 20 символов</div> : null
+                            ? <div>{t('signupForm.wrongLength')}</div> : null
                         }
-                        {userExists ? <div>Такой пользователь уже есть</div> : null}
+                        {userExists ? <div>{t('signupForm.userAlreadyExists')}</div> : null}
                       </div>
                       <div className="form-floating mb-3">
                         <input
@@ -110,19 +112,19 @@ const SingupForm = () => {
                           value={formik.values.password}
                           onChange={formik.handleChange}
                         />
-                        <div className="invalid-tooltip">Обязательное поле</div>
+                        <div className="invalid-tooltip">{t('signupForm.requiredField')}</div>
                         <label className="form-label" htmlFor="password">
-                          Пароль
+                          {t('password')}
                         </label>
                         {
                           (formik.errors.password === 'required')
                           && formik.touched.password
-                            ? <div>Обязательное поле</div> : null
+                            ? <div>{t('signupForm.requiredField')}</div> : null
                         }
                         {
                           (formik.errors.password === 'incorrect length')
                           && formik.touched.password
-                            ? <div>Не менее 6 символов</div> : null
+                            ? <div>{t('signupForm.sixSymbols')}</div> : null
                         }
                       </div>
                       <div className="form-floating mb-4">
@@ -139,19 +141,19 @@ const SingupForm = () => {
                         />
                         <div className="invalid-tooltip" />
                         <label className="form-label" htmlFor="confirmPassword">
-                          Подтвердите пароль
+                          {t('signupForm.confirmPassword')}
                         </label>
                         {
                           (formik.errors.confirmPassword === 'passwords must match')
                           && formik.touched.confirmPassword
-                            ? <div>Пароли должны совпадать</div> : null
+                            ? <div>{t('signupForm.passwordsDontMatch')}</div> : null
                         }
                       </div>
                       <button
                         type="submit"
                         className="w-100 btn btn-outline-primary"
                       >
-                        Зарегистрироваться
+                        {t('signupForm.register')}
                       </button>
                     </form>
                   </div>

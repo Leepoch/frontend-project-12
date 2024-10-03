@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import App from './components/App.js';
 import store from './slices/index.js';
+import './i18next.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

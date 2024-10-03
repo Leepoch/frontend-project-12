@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 import io from 'socket.io-client';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import {
   useGetChannelsQuery,
   useGetMessagesQuery,
@@ -19,6 +20,8 @@ import { addMessages, addMessage, setCurrentMessage } from '../slices/messagesSl
 import { Modal } from './modal/Modal.js';
 import { setChannelMenu, setIsOpenModal, setModalType } from '../slices/modalSlice.js';
 
+const socket = io('ws://localhost:3000');
+
 const MainPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -33,19 +36,19 @@ const MainPage = () => {
   );
   const [messagesNumber, setMessagesNumber] = useState(0);
   const inputChat = useRef(null);
+  const { t } = useTranslation();
 
-  // const socket = io('ws://localhost:3000');
-
-  // socket.on('newMessage', (payload) => {
-  //   console.log(payload);
-  // });
+  socket.on('newMessage', (payload) => {
+    dispatch(addMessage(payload));
+    console.log(payload);
+  });
 
   useEffect(() => {
     inputChat.current.focus();
   }, [activeChannelId]);
 
   useEffect(() => {
-    if (!token) {
+    if (!token) { 
       navigate('/login');
     }
     if (channelsData.isSuccess) {
@@ -66,21 +69,23 @@ const MainPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newMessage = {
-      body: messages.currentMessage,
-      channelId: activeChannelId,
-      username: localStorage.getItem('username'),
-    };
-    const response = await axios.post('/api/v1/messages', newMessage, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    dispatch(addMessage(response.data));
-    dispatch(addMessageToChannel(response.data));
+    if (messages.currentMessage.length > 0) {
+      const newMessage = {
+        body: messages.currentMessage,
+        channelId: activeChannelId,
+        username: localStorage.getItem('username'),
+      };
+      const response = await axios.post('/api/v1/messages', newMessage, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      dispatch(addMessage(response.data));
+      dispatch(addMessageToChannel(response.data));
 
-    inputChat.current.focus();
-    dispatch(setCurrentMessage(''));
+      inputChat.current.focus();
+      dispatch(setCurrentMessage(''));
+    }
   };
 
   const handleChoose = (e) => {
@@ -121,14 +126,14 @@ const MainPage = () => {
             <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
               <div className="container">
                 <a className="navbar-brand" href="/">
-                  Hexlet Chat
+                  {t('hexletTextLogo')}
                 </a>
                 <button
                   type="button"
                   className="btn btn-primary"
                   onClick={exitHandle}
                 >
-                  Выйти
+                  {t('mainPage.exitBtn')}
                 </button>
               </div>
             </nav>
@@ -136,7 +141,7 @@ const MainPage = () => {
               <div className="row h-100 bg-white flex-md-row">
                 <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
                   <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-                    <b>Каналы</b>
+                    <b>{t('mainPage.channels')}</b>
                     <button
                       type="button"
                       className="p-0 text-primary btn btn-group-vertical"
@@ -194,7 +199,11 @@ const MainPage = () => {
                                   onClick={handleChoose}
                                   id={id}
                                 >
-                                  <span className="me-1">#</span>
+                                  <span
+                                    className="me-1"
+                                  >
+                                    {t('mainPage.grid')}
+                                  </span>
                                   {channels.entities[id].name}
                                 </button>
                               </li>
@@ -210,7 +219,7 @@ const MainPage = () => {
                                 onClick={handleChoose}
                                 id={id}
                               >
-                                <span className="me-1">#</span>
+                                <span className="me-1">{t('mainPage.grid')}</span>
                                 {channels.entities[id].name}
                               </button>
                               <button
@@ -221,7 +230,7 @@ const MainPage = () => {
                                 onClick={handleChannelMenu}
                               >
                                 <span className="visually-hidden">
-                                  Управление каналом
+                                  {t('mainPage.channelManage')}
                                 </span>
                               </button>
                               <div
@@ -245,7 +254,7 @@ const MainPage = () => {
                                   tabIndex="0"
                                   href="#"
                                 >
-                                  Удалить
+                                  {t('mainPage.deleteChannel')}
                                 </a>
                                 <a
                                   onClick={handleRenameChannel}
@@ -255,7 +264,7 @@ const MainPage = () => {
                                   tabIndex="0"
                                   href="#"
                                 >
-                                  Переименовать
+                                  {t('mainPage.renameChannel')}
                                 </a>
                               </div>
                             </div>
@@ -269,7 +278,7 @@ const MainPage = () => {
                     <div className="bg-light mb-4 p-3 shadow-sm small">
                       <p className="m-0">
                         <b>
-                          #
+                          {t('mainPage.grid')}
                           {' '}
                           {channels.ids.length > 0
                             && channels.entities[activeChannelId].name}
@@ -278,7 +287,7 @@ const MainPage = () => {
                       <span className="text-muted">
                         {messagesNumber}
                         {' '}
-                        сообщений
+                        {t('mainPage.messagesCount')}
                       </span>
                     </div>
                     <div
@@ -289,6 +298,7 @@ const MainPage = () => {
                         && channels.entities[activeChannelId].messages.map(
                           (messageId) => {
                             const { username } = messages.entities[messageId];
+                            console.log(messages)
                             const text = messages.entities[messageId].body;
                             return (
                               <div key={messageId} className="text-break mb-2">

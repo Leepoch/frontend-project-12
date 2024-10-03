@@ -1,11 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { renameChannel } from '../../slices/channelsSlice.js';
-import { setIsOpenModal } from '../../slices/modalSlice.js';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { setIsOpenModal } from '../../slices/modalSlice.js';
+import { renameChannel } from '../../slices/channelsSlice.js';
 
 export const ModalRename = () => {
   const inputModal = useRef(null);
@@ -20,7 +20,7 @@ export const ModalRename = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
+      name: currentChannelName,
     },
     validationSchema: Yup.object({
       name: Yup.string()
@@ -31,14 +31,15 @@ export const ModalRename = () => {
     }),
     onSubmit: async () => {
       const editedChannel = { name: formik.values.name };
-      const response = await axios.patch(`/api/v1/channels/${channels.activeChannelMenuId}`,
+      const response = await axios.patch(
+        `/api/v1/channels/${channels.activeChannelMenuId}`,
         editedChannel,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        }
-      )
+        },
+      );
       dispatch(renameChannel(response.data));
       dispatch(setIsOpenModal(false));
     },
@@ -46,7 +47,7 @@ export const ModalRename = () => {
 
   const handleClose = () => {
     dispatch(setIsOpenModal(false));
-  }
+  };
 
   return (
     <div
@@ -54,7 +55,7 @@ export const ModalRename = () => {
       aria-modal="true"
       className="fade modal show"
       tabIndex="-1"
-      style={{display: 'block'}}
+      style={{ display: 'block' }}
     >
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">

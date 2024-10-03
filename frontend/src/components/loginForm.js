@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useGetTokenMutation } from '../services/chatApi.js';
 import iconLogin from '../assets/iconLogin.jpeg';
-import { addUser } from '../slices/userSlice.js';
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  const { t } = useTranslation();
 
   useEffect(() => {
-    if (token) {
+    if (localStorage.getItem('token')) {
       navigate('/');
     }
   }, []);
@@ -58,7 +58,7 @@ const LoginForm = () => {
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
               <a className="navbar-brand" href="/">
-                Hexlet Chat
+                {t('hexletTextLogo')}
               </a>
             </div>
           </nav>
@@ -78,7 +78,7 @@ const LoginForm = () => {
                       className="col-12 col-md-6 mt-3 mt-md-0"
                       onSubmit={formik.handleSubmit}
                     >
-                      <h1 className="text-center mb-4">Войти</h1>
+                      <h1 className="text-center mb-4">{t('loginForm.login')}</h1>
                       <div className="form-floating mb-3">
                         <input
                           name="username"
@@ -90,7 +90,7 @@ const LoginForm = () => {
                           onChange={formik.handleChange}
                           value={formik.values.username}
                         />
-                        <label htmlFor="username">Ваш ник</label>
+                        <label htmlFor="username">{t('loginForm.yourNick')}</label>
                       </div>
                       <div className="form-floating mb-4">
                         <input
@@ -105,12 +105,12 @@ const LoginForm = () => {
                           value={formik.values.password}
                         />
                         <label className="form-label" htmlFor="password">
-                          Пароль
+                          {t('password')}
                         </label>
                         {formik.touched.username
                           && formik.errors.username ? null : (
                             <div className="invalid-tooltip">
-                              Неверные имя пользователя или пароль
+                              {t('loginForm.wrongNameOrPassword')}
                             </div>
                           )}
                       </div>
@@ -118,14 +118,17 @@ const LoginForm = () => {
                         type="submit"
                         className="w-100 mb-3 btn btn-outline-primary"
                       >
-                        Войти
+                        {t('loginForm.login')}
                       </button>
                     </form>
                   </div>
                   <div className="card-footer p-4">
                     <div className="text-center">
-                      <span>Нет аккаунта?</span>
-                      <a href="/signup">Регистрация</a>
+                      <span>{t('loginForm.haveAccount')}</span>
+                      <a href="/signup">
+                        {' '}
+                        {t('registration')}
+                      </a>
                     </div>
                   </div>
                 </div>

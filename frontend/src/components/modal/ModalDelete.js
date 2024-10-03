@@ -19,9 +19,9 @@ export const ModalDelete = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
-		dispatch(removeChannel(response.data));
-		dispatch(setIsOpenModal(false));
-		dispatch(setActiveChannelId('1'));
+    dispatch(removeChannel(response.data));
+    dispatch(setIsOpenModal(false));
+    dispatch(setActiveChannelId('1'));
   };
 
   return (
