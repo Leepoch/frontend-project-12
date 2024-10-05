@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import cn from 'classnames';
 import io from 'socket.io-client';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { ToastContainer } from 'react-toastify';
 import {
   useGetChannelsQuery,
   useGetMessagesQuery,
@@ -13,12 +13,13 @@ import {
   addChannels,
   addMessageToChannel,
   addMessagesToChannel,
-  setActiveChannelId,
-  setActiveChannelMenuId,
 } from '../slices/channelsSlice.js';
 import { addMessages, addMessage, setCurrentMessage } from '../slices/messagesSlice.js';
 import { Modal } from './modal/Modal.js';
-import { setChannelMenu, setIsOpenModal, setModalType } from '../slices/modalSlice.js';
+import Messages from './Messages.js';
+import { setIsOpenModal, setModalType } from '../slices/modalSlice.js';
+import 'react-toastify/dist/ReactToastify.css';
+import { Channels } from './Channels.js';
 
 const socket = io('ws://localhost:3000');
 
@@ -38,17 +39,24 @@ const MainPage = () => {
   const inputChat = useRef(null);
   const { t } = useTranslation();
 
-  socket.on('newMessage', (payload) => {
-    dispatch(addMessage(payload));
-    console.log(payload);
-  });
+  useEffect(() => {
+    socket.on('newMessage', (payload) => {
+      dispatch(addMessage(payload));
+    });
+  }, []);
 
   useEffect(() => {
     inputChat.current.focus();
   }, [activeChannelId]);
 
   useEffect(() => {
-    if (!token) { 
+    if (channels.ids.length > 0) {
+      setMessagesNumber(channels.entities[activeChannelId].messages.length);
+    }
+  });
+
+  useEffect(() => {
+    if (!token) {
       navigate('/login');
     }
     if (channelsData.isSuccess) {
@@ -82,40 +90,19 @@ const MainPage = () => {
       });
       dispatch(addMessage(response.data));
       dispatch(addMessageToChannel(response.data));
-
+      setMessagesNumber(channels.entities[activeChannelId].messages.length);
       inputChat.current.focus();
       dispatch(setCurrentMessage(''));
     }
-  };
-
-  const handleChoose = (e) => {
-    dispatch(setActiveChannelId(e.target.id));
   };
 
   const handleChange = (e) => {
     dispatch(setCurrentMessage(e.target.value));
   };
 
-  const handleChannelMenu = (e) => {
-    dispatch(setChannelMenu(!modal.channelMenu));
-    dispatch(setActiveChannelMenuId(e.target.id));
-  };
-
   const handleAddChannel = () => {
     dispatch(setIsOpenModal(true));
     dispatch(setModalType('add'));
-  };
-
-  const handleDeleteChannel = () => {
-    dispatch(setIsOpenModal(true));
-    dispatch(setModalType('delete'));
-    dispatch(setChannelMenu(false));
-  };
-
-  const handleRenameChannel = () => {
-    dispatch(setIsOpenModal(true));
-    dispatch(setModalType('rename'));
-    dispatch(setChannelMenu(false));
   };
 
   return (
@@ -164,113 +151,7 @@ const MainPage = () => {
                     id="channels-box"
                     className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
                   >
-                    {channels.ids.length >= 1
-                      && channels.ids.map((id) => {
-                        const { channelMenu } = modal;
-                        const activeMenuId = channels.activeChannelMenuId;
-                        const channelClass = cn(
-                          'w-100 rounded-0 text-start btn',
-                          {
-                            'btn-secondary': id === activeChannelId,
-                          },
-                        );
-                        const groupClass = cn('d-flex dropdown btn-group', {
-                          show: channelMenu && activeMenuId === id,
-                        });
-                        const buttonClass = cn(
-                          'flex-grow-0 dropdown-toggle dropdown-toggle-split btn btn-secondary',
-                          {
-                            show: channelMenu && activeMenuId === id,
-                          },
-                        );
-                        const menuClass = cn('dropdown-menu', {
-                          show: channelMenu && activeMenuId === id,
-                        });
-                        const channelMenuClass = cn('flex-grow-0 dropdown-toggle dropdown-toggle-split btn', {
-                          'btn-secondary': id === activeChannelId,
-                        });
-                        {
-                          if (!channels.entities[id].removable) {
-                            return (
-                              <li className="nav-item w-100" key={id}>
-                                <button
-                                  type="button"
-                                  className={channelClass}
-                                  onClick={handleChoose}
-                                  id={id}
-                                >
-                                  <span
-                                    className="me-1"
-                                  >
-                                    {t('mainPage.grid')}
-                                  </span>
-                                  {channels.entities[id].name}
-                                </button>
-                              </li>
-                            );
-                          }
-                        }
-                        return (
-                          <li className="nav-item w-100" key={id}>
-                            <div role="group" className={groupClass}>
-                              <button
-                                type="button"
-                                className={channelClass}
-                                onClick={handleChoose}
-                                id={id}
-                              >
-                                <span className="me-1">{t('mainPage.grid')}</span>
-                                {channels.entities[id].name}
-                              </button>
-                              <button
-                                type="button"
-                                id={id}
-                                aria-expanded={channelMenu}
-                                className={channelMenuClass}
-                                onClick={handleChannelMenu}
-                              >
-                                <span className="visually-hidden">
-                                  {t('mainPage.channelManage')}
-                                </span>
-                              </button>
-                              <div
-                                x-placement="bottom-end"
-                                aria-labelledby="react-aria8879752112-:r0:"
-                                className={menuClass}
-                                data-popper-reference-hidden="false"
-                                data-popper-escaped="false"
-                                data-popper-placement="bottom-end"
-                                style={{
-                                  position: 'absolute',
-                                  inset: '0px 0px auto auto',
-                                  transform: 'translate(0px, 40px)',
-                                }}
-                              >
-                                <a
-                                  onClick={handleDeleteChannel}
-                                  data-rr-ui-dropdown-item=""
-                                  className="dropdown-item"
-                                  role="button"
-                                  tabIndex="0"
-                                  href="#"
-                                >
-                                  {t('mainPage.deleteChannel')}
-                                </a>
-                                <a
-                                  onClick={handleRenameChannel}
-                                  data-rr-ui-dropdown-item=""
-                                  className="dropdown-item"
-                                  role="button"
-                                  tabIndex="0"
-                                  href="#"
-                                >
-                                  {t('mainPage.renameChannel')}
-                                </a>
-                              </div>
-                            </div>
-                          </li>
-                        );
-                      })}
+                    <Channels />
                   </ul>
                 </div>
                 <div className="col p-0 h-100">
@@ -294,22 +175,7 @@ const MainPage = () => {
                       id="messages-box"
                       className="chat-messages overflow-auto px-5 "
                     >
-                      {channels.ids.length > 0
-                        && channels.entities[activeChannelId].messages.map(
-                          (messageId) => {
-                            const { username } = messages.entities[messageId];
-                            console.log(messageId)
-                            console.log(messages)
-                            const text = messages.entities[messageId].body;
-                            return (
-                              <div key={messageId} className="text-break mb-2">
-                                <b>{username}</b>
-                                :
-                                {text}
-                              </div>
-                            );
-                          },
-                        )}
+                      <Messages />
                     </div>
                     <div className="mt-auto px-5 py-3">
                       <form noValidate="" className="py-1 border rounded-2">
@@ -348,7 +214,7 @@ const MainPage = () => {
               </div>
             </div>
           </div>
-          <div className="Toastify" />
+          <ToastContainer />
         </div>
       </div>
       {modal.isOpenModal ? <Modal /> : null}

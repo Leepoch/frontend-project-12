@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { setIsOpenModal } from '../../slices/modalSlice.js';
 import { removeChannel, setActiveChannelId } from '../../slices/channelsSlice.js';
+import 'react-toastify/dist/ReactToastify.css';
+import toastSuccess, { toastError } from '../../toasty/index.js';
 
 export const ModalDelete = () => {
   const dispatch = useDispatch();
@@ -14,14 +16,19 @@ export const ModalDelete = () => {
   };
 
   const handleDelete = async () => {
-    const response = await axios.delete(`/api/v1/channels/${channels.activeChannelMenuId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    dispatch(removeChannel(response.data));
-    dispatch(setIsOpenModal(false));
-    dispatch(setActiveChannelId('1'));
+    try {
+      const response = await axios.delete(`/api/v1/channels/${channels.activeChannelMenuId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      dispatch(removeChannel(response.data));
+      dispatch(setIsOpenModal(false));
+      dispatch(setActiveChannelId('1'));
+      toastSuccess('Канал удален');
+    } catch (e) {
+      toastError('Ошибка сети');
+    }
   };
 
   return (

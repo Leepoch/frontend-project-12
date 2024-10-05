@@ -6,9 +6,8 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { addChannel, setActiveChannelId } from '../../slices/channelsSlice.js';
 import { setIsOpenModal } from '../../slices/modalSlice.js';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import toastSuccess from '../../toasty/index.js'
+import toastSuccess, { toastError } from '../../toasty/index.js';
 
 export const ModalAdd = () => {
   const dispatch = useDispatch();
@@ -28,20 +27,22 @@ export const ModalAdd = () => {
         .notOneOf(channelsNames, 'has copy'),
     }),
     onSubmit: async () => {
-      const newChannel = {
-        name: formik.values.name,
-      };
-      const response = await axios.post('/api/v1/channels', newChannel, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (response.status === 200) {
+      try {
+        const newChannel = {
+          name: formik.values.name,
+        };
+        const response = await axios.post('/api/v1/channels', newChannel, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         dispatch(addChannel(response.data));
         dispatch(setActiveChannelId(response.data.id));
         formik.values.name = '';
-        toastSuccess('toasts.add');
         dispatch(setIsOpenModal(false));
+        toastSuccess('Канал создан');
+      } catch (e) {
+        toastError('Ошибка сети');
       }
     },
   });
@@ -52,7 +53,7 @@ export const ModalAdd = () => {
 
   const closeHandle = () => {
     dispatch(setIsOpenModal(false));
-  }
+  };
 
   return (
     <div
@@ -110,9 +111,6 @@ export const ModalAdd = () => {
                 </div>
               </div>
             </form>
-            <ToastContainer
-                    autoClose={5000}
-                   />
           </div>
         </div>
       </div>

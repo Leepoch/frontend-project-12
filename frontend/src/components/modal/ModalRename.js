@@ -6,6 +6,8 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { setIsOpenModal } from '../../slices/modalSlice.js';
 import { renameChannel } from '../../slices/channelsSlice.js';
+import 'react-toastify/dist/ReactToastify.css';
+import toastSuccess, { toastError } from '../../toasty/index.js';
 
 export const ModalRename = () => {
   const inputModal = useRef(null);
@@ -30,18 +32,23 @@ export const ModalRename = () => {
         .notOneOf(channelsNames, 'has copy'),
     }),
     onSubmit: async () => {
-      const editedChannel = { name: formik.values.name };
-      const response = await axios.patch(
-        `/api/v1/channels/${channels.activeChannelMenuId}`,
-        editedChannel,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+      try {
+        const editedChannel = { name: formik.values.name };
+        const response = await axios.patch(
+          `/api/v1/channels/${channels.activeChannelMenuId}`,
+          editedChannel,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           },
-        },
-      );
-      dispatch(renameChannel(response.data));
-      dispatch(setIsOpenModal(false));
+        );
+        dispatch(renameChannel(response.data));
+        dispatch(setIsOpenModal(false));
+        toastSuccess('Канал переименован');
+      } catch (e) {
+        toastError('Ошибка сети');
+      }
     },
   });
 
