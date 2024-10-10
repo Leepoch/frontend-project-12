@@ -8,18 +8,18 @@ import { ToastContainer } from 'react-toastify';
 import {
   useGetChannelsQuery,
   useGetMessagesQuery,
-} from '../services/chatApi.js';
+} from '../services/chatApi.jsx';
 import {
   addChannels,
   addMessageToChannel,
   addMessagesToChannel,
-} from '../slices/channelsSlice.js';
-import { addMessages, addMessage, setCurrentMessage } from '../slices/messagesSlice.js';
-import { Modal } from './modal/Modal.js';
-import Messages from './Messages.js';
-import { setIsOpenModal, setModalType } from '../slices/modalSlice.js';
+} from '../slices/channelsSlice.jsx';
+import { addMessages, addMessage, setCurrentMessage } from '../slices/messagesSlice.jsx';
+import { Modal } from './modal/Modal.jsx';
+import Messages from './Messages.jsx';
+import { setIsOpenModal, setModalType } from '../slices/modalSlice.jsx';
 import 'react-toastify/dist/ReactToastify.css';
-import { Channels } from './Channels.js';
+import { Channels } from './Channels.jsx';
 
 const socket = io('ws://localhost:3000');
 

@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import { useGetTokenMutation } from '../services/chatApi.js';
+import { useGetTokenMutation } from '../services/chatApi.jsx';
 import iconLogin from '../assets/iconLogin.jpeg';
 
 const LoginForm = () => {

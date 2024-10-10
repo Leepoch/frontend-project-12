@@ -2,10 +2,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { setIsOpenModal } from '../../slices/modalSlice.js';
-import { removeChannel, setActiveChannelId } from '../../slices/channelsSlice.js';
+import { setIsOpenModal } from '../../slices/modalSlice.jsx';
+import { removeChannel, setActiveChannelId } from '../../slices/channelsSlice.jsx';
 import 'react-toastify/dist/ReactToastify.css';
-import toastSuccess, { toastError } from '../../toasty/index.js';
+import toastSuccess, { toastError } from '../../toasty/index.jsx';
 
 export const ModalDelete = () => {
   const dispatch = useDispatch();

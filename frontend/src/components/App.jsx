@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginForm from './loginForm.js';
-import SingupForm from './signupForm.js';
-import NotFoundPage from './notFoundPage.js';
-import MainPage from './mainPage.js';
+import LoginForm from './loginForm.jsx';
+import SingupForm from './signupForm.jsx';
+import NotFoundPage from './notFoundPage.jsx';
+import MainPage from './mainPage.jsx';
 
 const App = () => (
   <BrowserRouter>

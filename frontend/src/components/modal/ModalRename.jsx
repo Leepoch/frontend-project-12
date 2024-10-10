@@ -1,23 +1,28 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useFormik } from 'formik';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { addChannel, setActiveChannelId } from '../../slices/channelsSlice.js';
-import { setIsOpenModal } from '../../slices/modalSlice.js';
+import { setIsOpenModal } from '../../slices/modalSlice.jsx';
+import { renameChannel } from '../../slices/channelsSlice.jsx';
 import 'react-toastify/dist/ReactToastify.css';
-import toastSuccess, { toastError } from '../../toasty/index.js';
+import toastSuccess, { toastError } from '../../toasty/index.jsx';
 
-export const ModalAdd = () => {
-  const dispatch = useDispatch();
-  const channels = useSelector((state) => state.channels);
-  const channelsNames = channels.ids.map((id) => channels.entities[id].name);
+export const ModalRename = () => {
   const inputModal = useRef(null);
+  const channels = useSelector((state) => state.channels);
+  const currentChannelName = channels.entities[channels.activeChannelMenuId].name;
+  const channelsNames = channels.ids.map((id) => channels.entities[id].name);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    inputModal.current.focus();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
-      name: '',
+      name: currentChannelName,
     },
     validationSchema: Yup.object({
       name: Yup.string()
@@ -28,30 +33,26 @@ export const ModalAdd = () => {
     }),
     onSubmit: async () => {
       try {
-        const newChannel = {
-          name: formik.values.name,
-        };
-        const response = await axios.post('/api/v1/channels', newChannel, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        const editedChannel = { name: formik.values.name };
+        const response = await axios.patch(
+          `/api/v1/channels/${channels.activeChannelMenuId}`,
+          editedChannel,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           },
-        });
-        dispatch(addChannel(response.data));
-        dispatch(setActiveChannelId(response.data.id));
-        formik.values.name = '';
+        );
+        dispatch(renameChannel(response.data));
         dispatch(setIsOpenModal(false));
-        toastSuccess('Канал создан');
+        toastSuccess('Канал переименован');
       } catch (e) {
         toastError('Ошибка сети');
       }
     },
   });
 
-  useEffect(() => {
-    inputModal.current.focus();
-  }, []);
-
-  const closeHandle = () => {
+  const handleClose = () => {
     dispatch(setIsOpenModal(false));
   };
 
@@ -66,13 +67,13 @@ export const ModalAdd = () => {
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
-            <div className="modal-title h4">Добавить канал</div>
+            <div className="modal-title h4">Переименовать канал</div>
             <button
               type="button"
               aria-label="Close"
               data-bs-dismiss="modal"
               className="btn btn-close"
-              onClick={closeHandle}
+              onClick={handleClose}
             />
           </div>
           <div className="modal-body">
@@ -97,12 +98,9 @@ export const ModalAdd = () => {
                 && formik.errors.name === 'has copy' ? null : (
                   <div className="invalid-feedback">Должно быть уникальным</div>
                   )}
+                <div className="invalid-feedback" />
                 <div className="d-flex justify-content-end">
-                  <button
-                    type="button"
-                    className="me-2 btn btn-secondary"
-                    onClick={closeHandle}
-                  >
+                  <button type="button" className="me-2 btn btn-secondary" onClick={handleClose}>
                     Отменить
                   </button>
                   <button type="submit" className="btn btn-primary">

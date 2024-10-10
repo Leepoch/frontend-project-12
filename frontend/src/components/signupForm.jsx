@@ -4,7 +4,7 @@ import { Formik, Form, useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import { useSignupUserMutation } from '../services/chatApi.js';
+import { useSignupUserMutation } from '../services/chatApi.jsx';
 // import iconSignup from '../assets/iconSignup.jpeg';
 
 const SingupForm = () => {

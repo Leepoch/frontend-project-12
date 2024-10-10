@@ -2,10 +2,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { setActiveChannelId, setActiveChannelMenuId } from '../slices/channelsSlice.js';
-import { setChannelMenu, setIsOpenModal, setModalType } from '../slices/modalSlice.js';
+import { setActiveChannelId, setActiveChannelMenuId } from '../slices/channelsSlice.jsx';
+import { setChannelMenu, setIsOpenModal, setModalType } from '../slices/modalSlice.jsx';
 
-const Channels = () => {
+export const Channels = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const channels = useSelector((state) => state.channels);
@@ -133,5 +133,3 @@ const Channels = () => {
     })
   );
 };
-
-export default Channels;
