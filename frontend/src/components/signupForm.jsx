@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useSignupUserMutation } from '../services/chatApi.jsx';
-import iconLogin from '../assets/iconLogin.jpeg';
+import iconLogin from '../assets/iconSignup.jpg';
 
 const SingupForm = () => {
   const [signupUser] = useSignupUserMutation();
