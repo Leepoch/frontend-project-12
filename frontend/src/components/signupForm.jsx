@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Formik, Form, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useSignupUserMutation } from '../services/chatApi.jsx';
-// import iconSignup from '../assets/iconSignup.jpeg';
+import iconLogin from '../assets/iconLogin.jpeg';
 
 const SingupForm = () => {
   const [signupUser] = useSignupUserMutation();
@@ -37,13 +37,10 @@ const SingupForm = () => {
         username: formik.values.username,
         password: formik.values.password,
       });
-      console.log(response);
       if (response.error?.status === 409) {
         setUserExists(true);
       } else if (!response.error) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('username', response.data.username);
-        navigate('/');
+        navigate('/login');
       }
     },
   });
@@ -66,7 +63,7 @@ const SingupForm = () => {
                   <div className="card-body d-flex flex-column flex-md-row justify-content-around align-items-center p-5">
                     <div>
                       <img
-                        src=""
+                        src={iconLogin}
                         className="rounded-circle"
                         alt="Регистрация"
                       />
