@@ -28,7 +28,6 @@ const SingupForm = () => {
         .min(6, 'incorrect length')
         .required('required'),
       confirmPassword: Yup.string()
-        .min(6, 'incorrect length')
         .oneOf([Yup.ref('password')], 'passwords must match')
         .required('required'),
     }),
@@ -40,7 +39,9 @@ const SingupForm = () => {
       if (response.error?.status === 409) {
         setUserExists(true);
       } else if (!response.error) {
-        navigate('/login');
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username', response.data.username);
+        navigate('/');
       }
     },
   });
@@ -145,6 +146,7 @@ const SingupForm = () => {
                           && formik.touched.confirmPassword
                             ? <div>{t('signupForm.passwordsDontMatch')}</div> : null
                         }
+                        {console.log(formik.errors.confirmPassword)}
                       </div>
                       <button
                         type="submit"

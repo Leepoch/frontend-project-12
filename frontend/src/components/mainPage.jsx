@@ -10,6 +10,7 @@ import {
   useGetMessagesQuery,
 } from '../services/chatApi.jsx';
 import {
+  addChannel,
   addChannels,
   addMessageToChannel,
   addMessagesToChannel,
@@ -44,6 +45,9 @@ const MainPage = () => {
     socket.on('newMessage', (payload) => {
       dispatch(addMessage(payload));
     });
+    socket.on('newChannel', (payload) => {
+      dispatch(addChannel(payload));
+    })
   }, []);
 
   useEffect(() => {

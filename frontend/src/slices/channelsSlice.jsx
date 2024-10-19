@@ -22,9 +22,11 @@ const slice = createSlice({
       });
     },
     addChannel(state, { payload }) {
-      state.entities[payload.id] = payload;
-      state.entities[payload.id].messages = [];
-      state.ids.push(payload.id);
+      if (!state.ids.includes(payload.id)) {
+        state.entities[payload.id] = payload;
+        state.entities[payload.id].messages = [];
+        state.ids.push(payload.id);
+      }
     },
     removeChannel(state, { payload }) {
       delete state.entities[payload.id];

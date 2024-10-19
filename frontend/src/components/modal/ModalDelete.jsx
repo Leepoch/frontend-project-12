@@ -25,7 +25,7 @@ export const ModalDelete = () => {
       dispatch(removeChannel(response.data));
       dispatch(setIsOpenModal(false));
       dispatch(setActiveChannelId('1'));
-      toastSuccess('Канал удален');
+      toastSuccess('Канал удалён');
     } catch (e) {
       toastError('Ошибка сети');
     }
