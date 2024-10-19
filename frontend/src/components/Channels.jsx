@@ -10,12 +10,13 @@ export const Channels = () => {
   const { t } = useTranslation();
   const channels = useSelector((state) => state.channels);
   const modal = useSelector((state) => state.modal);
+  const filter = require('leo-profanity');
   const activeChannelId = useSelector(
     (state) => state.channels.activeChannelId,
   );
 
   const handleChoose = (e) => {
-    dispatch(setActiveChannelId(e.target.id));
+    dispatch(setActiveChannelId(e.currentTarget.id));
   };
 
   const handleChannelMenu = (e) => {
@@ -40,7 +41,7 @@ export const Channels = () => {
     && channels.ids.map((id) => {
       const { channelMenu } = modal;
       const activeMenuId = channels.activeChannelMenuId;
-      const channelClass = cn('w-100 rounded-0 text-start btn', {
+      const channelClass = cn('w-100 rounded-0 text-start text-truncate btn', {
         'btn-secondary': id === activeChannelId,
       });
       const groupClass = cn('d-flex dropdown btn-group', {
@@ -65,7 +66,7 @@ export const Channels = () => {
                 id={id}
               >
                 <span className="me-1">{t('mainPage.grid')}</span>
-                {channels.entities[id].name}
+                {filter.clean(channels.entities[id].name)}
               </button>
             </li>
           );
@@ -80,7 +81,7 @@ export const Channels = () => {
               id={id}
             >
               <span className="me-1">{t('mainPage.grid')}</span>
-              {channels.entities[id].name}
+              {filter.clean(channels.entities[id].name)}
             </button>
             <button
               type="button"

@@ -27,7 +27,7 @@ export default {
       username: 'Имя пользователя',
       requiredField: 'Обязательное поле',
       wrongLength: 'От 3 до 20 символов',
-      userAlreadyExists: 'Такой пользователь уже есть',
+      userAlreadyExists: 'Такой пользователь уже существует',
       sixSymbols: 'Не менее 6 символов',
       confirmPassword: 'Подтвердите пароль',
       passwordsDontMatch: 'Пароли должны совпадать',

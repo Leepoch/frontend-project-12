@@ -90,13 +90,13 @@ export const ModalAdd = () => {
                   Имя канала
                 </label>
                 {formik.touched.name
-                && formik.errors.name === 'incorrect length' ? null : (
-                  <div className="invalid-feedback">От 3 до 20 символов</div>
-                  )}
+                && formik.errors.name === 'incorrect length' ? (
+                  <div>От 3 до 20 символов</div>
+                  ) : null}
                 {formik.touched.name
-                && formik.errors.name === 'has copy' ? null : (
-                  <div className="invalid-feedback">Должно быть уникальным</div>
-                  )}
+                && formik.errors.name === 'has copy' ? (
+                  <div>Должно быть уникальным</div>
+                  ) : null}
                 <div className="d-flex justify-content-end">
                   <button
                     type="button"

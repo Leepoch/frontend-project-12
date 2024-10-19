@@ -124,9 +124,8 @@ const LoginForm = () => {
                   </div>
                   <div className="card-footer p-4">
                     <div className="text-center">
-                      <span>{t('loginForm.haveAccount')}</span>
+                      <span>{t('loginForm.haveAccount')+' '}</span>
                       <a href="/signup">
-                        {' '}
                         {t('registration')}
                       </a>
                     </div>
