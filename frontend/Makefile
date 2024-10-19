@@ -2,13 +2,10 @@ install:
 	npm ci
 
 start:
-	npx start-server -s ./frontend/build
+	npm start
 
 build:
-	npm run build
+	npm build
 
 lint:
 	npx eslint --ext js,jsx --no-eslintrc --config .eslintrc.yml .
-
-fixLint:
-	npx eslint --fix .
