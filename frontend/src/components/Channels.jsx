@@ -1,16 +1,16 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
+import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { setActiveChannelId, setActiveChannelMenuId } from '../slices/channelsSlice.jsx';
 import { setChannelMenu, setIsOpenModal, setModalType } from '../slices/modalSlice.jsx';
 
-export const Channels = () => {
+const Channels = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const channels = useSelector((state) => state.channels);
   const modal = useSelector((state) => state.modal);
-  const filter = require('leo-profanity');
   const activeChannelId = useSelector(
     (state) => state.channels.activeChannelId,
   );
@@ -56,20 +56,20 @@ export const Channels = () => {
           'btn-secondary': id === activeChannelId,
         },
       );
-        if (!channels.entities[id].removable) {
-          return (
-            <li className="nav-item w-100" key={id}>
-              <button
-                type="button"
-                className={channelClass}
-                onClick={handleChoose}
-                id={id}
-              >
-                <span className="me-1">{t('mainPage.grid')}</span>
-                {filter.clean(channels.entities[id].name)}
-              </button>
-            </li>
-          );
+      if (!channels.entities[id].removable) {
+        return (
+          <li className="nav-item w-100" key={id}>
+            <button
+              type="button"
+              className={channelClass}
+              onClick={handleChoose}
+              id={id}
+            >
+              <span className="me-1">{t('mainPage.grid')}</span>
+              {filter.clean(channels.entities[id].name)}
+            </button>
+          </li>
+        );
       }
       return (
         <li className="nav-item w-100" key={id}>
@@ -95,7 +95,6 @@ export const Channels = () => {
               </span>
             </button>
             <div
-              x-placement="bottom-end"
               aria-labelledby="react-aria8879752112-:r0:"
               className={menuClass}
               data-popper-reference-hidden="false"
@@ -107,26 +106,26 @@ export const Channels = () => {
                 transform: 'translate(0px, 40px)',
               }}
             >
-              <a
+              <button
+                type="button"
                 onClick={handleDeleteChannel}
                 data-rr-ui-dropdown-item=""
                 className="dropdown-item"
-                role="button"
                 tabIndex="0"
                 href="#"
               >
                 {t('mainPage.deleteChannel')}
-              </a>
-              <a
+              </button>
+              <button
+                type="button"
                 onClick={handleRenameChannel}
                 data-rr-ui-dropdown-item=""
                 className="dropdown-item"
-                role="button"
                 tabIndex="0"
                 href="#"
               >
                 {t('mainPage.renameChannel')}
-              </a>
+              </button>
             </div>
           </div>
         </li>
@@ -134,3 +133,5 @@ export const Channels = () => {
     })
   );
 };
+
+export default Channels;

@@ -7,7 +7,7 @@ import { removeChannel, setActiveChannelId } from '../../slices/channelsSlice.js
 import 'react-toastify/dist/ReactToastify.css';
 import toastSuccess, { toastError } from '../../toasty/index.jsx';
 
-export const ModalDelete = () => {
+const ModalDelete = () => {
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels);
 
@@ -75,3 +75,5 @@ export const ModalDelete = () => {
     </div>
   );
 };
+
+export default ModalDelete;

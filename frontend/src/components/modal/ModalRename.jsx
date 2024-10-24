@@ -9,7 +9,7 @@ import { renameChannel } from '../../slices/channelsSlice.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import toastSuccess, { toastError } from '../../toasty/index.jsx';
 
-export const ModalRename = () => {
+const ModalRename = () => {
   const inputModal = useRef(null);
   const channels = useSelector((state) => state.channels);
   const currentChannelName = channels.entities[channels.activeChannelMenuId].name;
@@ -115,3 +115,5 @@ export const ModalRename = () => {
     </div>
   );
 };
+
+export default ModalRename;

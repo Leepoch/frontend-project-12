@@ -28,14 +28,7 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(removeChannel, (state, { payload }) => {
-        // if (state.ids.length > 0) {
-        //   state.ids.forEach((id) => {
-        //     if (state.entities[id].channelId === payload.id) {
-        //       delete state.entities[id];
-        //     }
-        //   });
-        // }
+      .addCase(removeChannel, () => {
       });
   },
 });

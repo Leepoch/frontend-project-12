@@ -1,16 +1,16 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import filter from 'leo-profanity';
 
 const Message = () => {
   const messageArray = [];
   const activeChannelId = useSelector((state) => state.channels.activeChannelId);
   const messagesMain = useSelector((state) => state.messages);
-  const filter = require('leo-profanity');
-  for (const key in messagesMain.entities) {
-    if (messagesMain.entities[key].channelId == activeChannelId) {
+  messagesMain.entities.forEach((key) => {
+    if (messagesMain.entities[key].channelId === activeChannelId) {
       messageArray.push(messagesMain.entities[key]);
     }
-  }
+  });
   return (
     <>
       {

@@ -1,10 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useSelector } from 'react-redux';
-import { ModalAdd } from './ModalAdd.jsx';
-import { ModalDelete } from './ModalDelete.jsx';
-import { ModalRename } from './ModalRename.jsx';
+import ModalAdd from './ModalAdd.jsx';
+import ModalDelete from './ModalDelete.jsx';
+import ModalRename from './ModalRename.jsx';
 
-export const Modal = () => {
+const Modal = () => {
   const modalType = useSelector((state) => state.modal.modalType);
   return (
     <>
@@ -15,3 +15,5 @@ export const Modal = () => {
     </>
   );
 };
+
+export default Modal;

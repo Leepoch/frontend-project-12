@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer } from 'react-toastify';
+import filter from 'leo-profanity';
 import {
   useGetChannelsQuery,
   useGetMessagesQuery,
@@ -16,11 +17,11 @@ import {
   addMessagesToChannel,
 } from '../slices/channelsSlice.jsx';
 import { addMessages, addMessage, setCurrentMessage } from '../slices/messagesSlice.jsx';
-import { Modal } from './modal/Modal.jsx';
+import Modal from './modal/Modal.jsx';
 import Messages from './Messages.jsx';
 import { setIsOpenModal, setModalType } from '../slices/modalSlice.jsx';
 import 'react-toastify/dist/ReactToastify.css';
-import { Channels } from './Channels.jsx';
+import Channels from './Channels.jsx';
 
 const socket = io('ws://localhost:3000');
 
@@ -39,7 +40,6 @@ const MainPage = () => {
   const [messagesNumber, setMessagesNumber] = useState(0);
   const inputChat = useRef(null);
   const { t } = useTranslation();
-  const filter = require('leo-profanity');
 
   useEffect(() => {
     socket.on('newMessage', (payload) => {
@@ -47,7 +47,7 @@ const MainPage = () => {
     });
     socket.on('newChannel', (payload) => {
       dispatch(addChannel(payload));
-    })
+    });
   }, []);
 
   useEffect(() => {

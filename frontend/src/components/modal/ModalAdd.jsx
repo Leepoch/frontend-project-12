@@ -9,7 +9,7 @@ import { setIsOpenModal } from '../../slices/modalSlice.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import toastSuccess, { toastError } from '../../toasty/index.jsx';
 
-export const ModalAdd = () => {
+const ModalAdd = () => {
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels);
   const channelsNames = channels.ids.map((id) => channels.entities[id].name);
@@ -117,3 +117,5 @@ export const ModalAdd = () => {
     </div>
   );
 };
+
+export default ModalAdd;

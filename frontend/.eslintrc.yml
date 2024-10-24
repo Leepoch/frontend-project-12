@@ -19,6 +19,7 @@ rules:
   import/no-unresolved: 0
   react/prop-types: 0
   no-console: 0
+  no-param-reassign: 0
   react/react-in-jsx-scope: 0
   functional/no-conditional-statements: 0
   functional/immutable-data: 0
@@ -26,6 +27,7 @@ rules:
   functional/no-expression-statements: 0
   functional/no-expression-statement: 0
   functional/functional-parameters: 0
+  functional/no-try-statement: 0
   functional/no-try-statements: 0
   functional/no-throw-statements: 0
   functional/no-return-void: 0
