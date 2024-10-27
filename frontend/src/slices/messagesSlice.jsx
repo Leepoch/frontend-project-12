@@ -19,8 +19,10 @@ const slice = createSlice({
     },
     addMessage(state, action) {
       const message = action.payload;
-      state.entities[message.id] = message;
-      state.ids.push(message.id);
+      if (!state.ids.includes(message.id)) {
+        state.entities[message.id] = message;
+        state.ids.push(message.id);
+      }
     },
     setCurrentMessage(state, { payload }) {
       state.currentMessage = payload;

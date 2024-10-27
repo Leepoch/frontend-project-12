@@ -6,7 +6,7 @@ const Message = () => {
   const messageArray = [];
   const activeChannelId = useSelector((state) => state.channels.activeChannelId);
   const messagesMain = useSelector((state) => state.messages);
-  messagesMain.entities.forEach((key) => {
+  messagesMain.ids.forEach((key) => {
     if (messagesMain.entities[key].channelId === activeChannelId) {
       messageArray.push(messagesMain.entities[key]);
     }
