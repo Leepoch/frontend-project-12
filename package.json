@@ -9,13 +9,17 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "cd frontend && npm ci"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@fastify/static": "^7.0.4",
-    "@hexlet/chat-server": "^2.0.4"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leepoch/frontend-project-12.git"
   },
-  "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object":"7.21.11"
+  "author": "Nikita Meschariakov",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "@hexlet/chat-server": "2.0.4"
   }
 }
