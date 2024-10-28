@@ -20,6 +20,7 @@
   },
   "homepage": "",
   "dependencies": {
-    "@hexlet/chat-server": "2.0.4"
+    "@hexlet/chat-server": "2.0.4",
+    "playwright": "^1.48.2"
   }
 }
